@@ -11,7 +11,8 @@ import pandas
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write("Hello, world")
+        self.redirect("/index.html")
+        #self.write("Hello, world")
     
     def post(self):
         self.write("Hello post")
@@ -26,8 +27,10 @@ class y43WebSocket(tornado.websocket.WebSocketHandler):
         self.functions = {}
         self.register_web_function(self.debug_echo)
 
+
     def debug_echo(self, *args, **kwargs):
         return {"args":list(args),"kwargs":dict(kwargs)}
+
 
     def register_web_function(self,func, func_name = None):
         if func_name is None:
@@ -35,7 +38,7 @@ class y43WebSocket(tornado.websocket.WebSocketHandler):
         if func_name in self.functions:
             raise "Function has beeen registrated"
         self.functions[func_name] = func
-        
+    
 
     def open(self):
         print("WebSocket opened")
@@ -73,13 +76,19 @@ class y43WebSocket(tornado.websocket.WebSocketHandler):
     def on_close(self):
         print("WebSocket closed")
 
+class MyStaticFileHandler(tornado.web.StaticFileHandler):
+    def set_extra_headers(self, path):
+        # Disable cache
+        self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+
 class y43():
     def __init__(self, socket = y43WebSocket):
         self.functions = {}
         self.web_app = tornado.web.Application([
         (r"/", MainHandler),
         (r"/websocket", socket),
-        (r"/(.*)", tornado.web.StaticFileHandler, {"path": "./www"}),
+        #(r"/(.*)", tornado.web.StaticFileHandler, {"path": "./www"}),
+        (r"/(.*)", MyStaticFileHandler, {"path": "./www"}),
         ])
 
     def register_web_function(self, func):
@@ -102,9 +111,9 @@ class my_y43WebSocket(y43WebSocket):
     def hello_world(self):
         return "hello world with register_web_function"
 
-    def random_table(self,length = 100, width = 4 ):
+    def random_table(self,length = 100, width = 4,orient="values" ):
         df = pandas.DataFrame(numpy.random.randint(0,100,size=(length, width)), columns=list('ABCD'))
-        return df.to_json()
+        return df.to_json(orient=orient)
 
 if __name__ == "__main__":
     server = y43(my_y43WebSocket)
