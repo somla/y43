@@ -61,16 +61,15 @@ class y43WebSocket(tornado.websocket.WebSocketHandler):
             if func_name not in self.functions:
                 raise Exception("{} function not found".format(func_name))
             if "kwargs" in js_message and "args" in js_message:
-                res = self.functions[func_name](*js_message["args"],**js_message["kwargs"])
+                res["res"] = self.functions[func_name](*js_message["args"],**js_message["kwargs"])
             elif "args" in js_message:
-                res = self.functions[func_name](*js_message["args"])
+                res["res"] = self.functions[func_name](*js_message["args"])
             elif "kwargs" in js_message:
-                res = self.functions[func_name](**js_message["kwargs"])
+                res["res"] = self.functions[func_name](**js_message["kwargs"])
             else:
-                res2 = self.functions[func_name]()
+                res["res"] = self.functions[func_name]()
             res["success"] = True
             res["error_msg"] = None
-            res["res"] = res2
         except Exception, e:
             res["success"]=False
             res["error_msg"]=str(e)
