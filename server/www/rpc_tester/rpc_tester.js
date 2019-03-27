@@ -1,5 +1,10 @@
 function send_msg()
 {
+    if(typeof(window["ws"]) === "undefined")
+    {
+        console.log("ws doesn't exist")
+        return false;
+    }
     let req = {};
     req["function"] = document.getElementById("function_name").value;
     let tr_args = document.getElementById("args_table").getElementsByClassName("arg_tr");
@@ -27,6 +32,8 @@ function send_msg()
     {
         req.kwargs = kwargs;
     }
+    req.call_id = "call_" + Math.floor(Math.random() * 1000000).toString()
+    req.req_sending_time = (new Date()).getTime();
     let reqStr = JSON.stringify(req);
     console.log(reqStr);
     window["ws"].send(reqStr);

@@ -8,6 +8,7 @@ import logging
 import json
 import numpy
 import pandas
+import time
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -44,11 +45,19 @@ class y43WebSocket(tornado.websocket.WebSocketHandler):
         print("WebSocket opened")
 
     def on_message(self, message):
-        res = {}
         try:
+            res = {
+                "req_arrive_time": time.time(),
+                "req_sending_time": None,
+                "call_id":None,
+            }
             logging.debug(message)
             js_message = json.loads(message)
             func_name = js_message["function"]
+            if "call_id" in js_message:
+                res["call_id"] = js_message["call_id"]
+            if "req_sending_time" in js_message:
+                res["req_sending_time"] = js_message["req_sending_time"]
             if func_name not in self.functions:
                 raise Exception("{} function not found".format(func_name))
             if "kwargs" in js_message and "args" in js_message:
@@ -58,19 +67,16 @@ class y43WebSocket(tornado.websocket.WebSocketHandler):
             elif "kwargs" in js_message:
                 res = self.functions[func_name](**js_message["kwargs"])
             else:
-                res = self.functions[func_name]()
-            res = {
-                "success":True,
-                "error_msg":None,
-                "res": res
-            }
+                res2 = self.functions[func_name]()
+            res["success"] = True
+            res["error_msg"] = None
+            res["res"] = res2
         except Exception, e:
-            res = {
-                "success":False,
-                "error_msg":str(e),
-                "res":None
-            }
+            res["success"]=False
+            res["error_msg"]=str(e)
+            res["res"]=None
         finally:
+            #res["resp_sending_time"] = time.time()
             self.write_message(json.dumps(res))
     
     def on_close(self):
