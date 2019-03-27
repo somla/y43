@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>rpc_tester - y43</title>
+        <script src="rpc_tester.js"></script>
+    </head>
+    <body>
+        <h1>rpc_tester - y43</h1>
+        <button onclick="open_reoopen_socket()" >(Re)openSocket</button>
+        <button onclick="close_socket()">CloseSocket</button>
+        <button onclick="send_msg()">Send</button>
+        SocketStatus: <span id="socketStatus"></span>
+        MsgError: <span id="socketError"></span><br />
+        <input id="function_name" />
+        <table id="args_table">
+            <tr>
+                <td>arg_name</td>
+                <td>arg_value</td>
+                <td>delete</td>
+            </tr>
+        </table>
+        <button onclick="add_argument()">Add argument</button>
+        <div id="result"></div>
+    </body>
+</html>
