@@ -6,6 +6,7 @@ import tornado.websocket
 
 import logging
 import json
+import numpy
 import pandas
 
 class MainHandler(tornado.web.RequestHandler):
@@ -96,11 +97,14 @@ class my_y43WebSocket(y43WebSocket):
     def __init__(self,*args, **kwargs):
         super(my_y43WebSocket, self).__init__(*args, **kwargs)
         self.register_web_function(self.hello_world)
+        self.register_web_function(self.random_table)
     
     def hello_world(self):
         return "hello world with register_web_function"
 
-
+    def random_table(self,length = 100, width = 4 ):
+        df = pandas.DataFrame(numpy.random.randint(0,100,size=(length, width)), columns=list('ABCD'))
+        return df.to_json()
 
 if __name__ == "__main__":
     server = y43(my_y43WebSocket)
