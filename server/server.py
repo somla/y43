@@ -10,10 +10,9 @@ import numpy
 import pandas
 import time
 
-class MainHandler(tornado.web.RequestHandler):
+class y43MainHandler(tornado.web.RequestHandler):
     def get(self):
         self.redirect("/index.html")
-        #self.write("Hello, world")
     
     def post(self):
         self.write("Hello post")
@@ -42,7 +41,7 @@ class y43WebSocket(tornado.websocket.WebSocketHandler):
     
 
     def open(self):
-        print("WebSocket opened")
+        logging.debug("WebSocket opened client ip: {}".format(self.request.remote_ip))
 
     def on_message(self, message):
         try:
@@ -79,31 +78,33 @@ class y43WebSocket(tornado.websocket.WebSocketHandler):
             self.write_message(json.dumps(res))
     
     def on_close(self):
-        print("WebSocket closed")
+        logging.debug("WebSocket closed client ip: {}".format(self.request.remote_ip))
 
-class MyStaticFileHandler(tornado.web.StaticFileHandler):
+class StaticFileHandlerWithNoCache(tornado.web.StaticFileHandler):
     def set_extra_headers(self, path):
         # Disable cache
         self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
 class y43():
-    def __init__(self, socket = y43WebSocket):
+    def __init__(self, socket = y43WebSocket, cache=True):
+        StaticFileHandler = tornado.web.StaticFileHandler
+        if not cache:
+            StaticFileHandler = StaticFileHandlerWithNoCache
         self.functions = {}
         self.web_app = tornado.web.Application([
-        (r"/", MainHandler),
+        (r"/", y43MainHandler),
         (r"/websocket", socket),
-        #(r"/(.*)", tornado.web.StaticFileHandler, {"path": "./www"}),
-        (r"/(.*)", MyStaticFileHandler, {"path": "./www"}),
+        (r"/(.*)", StaticFileHandler, {"path": "./www"}),
         ])
 
     def register_web_function(self, func):
         self.functions[func.__name__] = func
-        print(func.__name__)
+        logging.info("registered function: {}".format(func.__name__))
         return func
     
     def start(self, port = 8888):
         self.port = port
-        logging.warning("Server is starting on {:d} port...".format(port))
+        logging.info("Server is starting on {:d} port...".format(port))
         self.web_app.listen(port)
         tornado.ioloop.IOLoop.current().start()
 
@@ -121,5 +122,6 @@ class my_y43WebSocket(y43WebSocket):
         return df.to_json(orient=orient)
 
 if __name__ == "__main__":
-    server = y43(my_y43WebSocket)
+    logging.basicConfig(level=logging.DEBUG)
+    server = y43(my_y43WebSocket, cache=False)
     server.start(8888)
