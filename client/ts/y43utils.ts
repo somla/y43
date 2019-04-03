@@ -26,7 +26,7 @@ class y43utils
     static nowNumber(dev:number = 1, round:y43roundEnum = y43roundEnum.none ):number
     {
         let now:number = ((new Date()).getTime()) / dev;
-        return Math[round](now);
+        return this.round(now, round);
     }
     
     static nowStr(dev:number = 1, round:y43roundEnum = y43roundEnum.none ):string

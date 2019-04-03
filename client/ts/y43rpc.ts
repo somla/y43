@@ -23,7 +23,7 @@ class y43rpcMessage
 
 class y43rpc
 {
-    public static connections:Array<y43rpc>;
+    public static connections:Array<y43rpc> = new Array<y43rpc>();
     public static lastConnection():y43rpc|null
     {
         return y43utils.lastItem(this.connections);
@@ -32,25 +32,60 @@ class y43rpc
     public wsUrl:string;
     public ws:WebSocket;
     public calls:y43utilsDict<y43call>;
-    onmessage( ev:MessageEvent)
+    public notSentCalls:Array<y43call>;
+
+    constructor(_wsUrl:string = "")
     {
-        //TODO:Errorhandling
-        let message = new y43rpcMessage(ev.data);
-        this.calls[message.call_id].onmessage(message);
-    }
-    public send(call:y43call){
-        this.calls[call.callId] = call;
-        // TODO: finish
-        this.ws.send("")
-    }
-    constructor(_wsUrl:string = ""){
-        y43rpc.connections.push(this);
         if("" === _wsUrl)
         {
             _wsUrl = "ws://" + window.location.host + "/websocket";
         }
+        this.calls = {};
+        this.notSentCalls = Array<y43call>();
+        y43rpc.connections.push(this);
         this.wsUrl = _wsUrl;
         this.ws = new WebSocket(this.wsUrl);
-        this.ws.onmessage = function(ev:MessageEvent) { this.onmessage(ev); };
+        let _this = this;
+        this.ws.onmessage = function(ev:MessageEvent) { _this.onmessage(ev); };
+        this.ws.onopen = function(ev:MessageEvent) { _this.onopen(ev); };
+    }
+
+    onopen(ev:MessageEvent)
+    {
+        for(let i = 0; i < this.notSentCalls.length; ++i)
+        {
+            this._send( this.notSentCalls[i] );
+        }
+        this.notSentCalls = new Array<y43call>();
+    }
+
+    onmessage(ev:MessageEvent)
+    {
+        //TODO:Errorhandling
+        console.log("hello");
+        console.log(ev);
+        let message = new y43rpcMessage(ev.data);
+        this.calls[message.call_id].onmessage(message);
+    }
+
+    private _send(call:y43call)
+    {
+        this.calls[call.callId] = call;
+        
+        this.ws.send("");
+    }
+
+    public send(call:y43call){
+        switch( this.ws.readyState )
+        {
+            case WebSocket.OPEN:
+                return this._send(call);
+            case WebSocket.CONNECTING:
+                this.notSentCalls.push(call);
+                // TODO: own enum
+                return WebSocket.CONNECTING;
+            default:
+                return this.ws.readyState;
+        }
     }
 }

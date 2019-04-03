@@ -64,4 +64,4 @@ class y43helloWorld extends y43function
 
 let rpc = new y43rpc();
 let f:y43helloWorld = new y43helloWorld();
-f.call(rpc);
+let call:y43call = f.call(rpc);
