@@ -5,7 +5,7 @@ abstract class y43arg {
         this.typename = _typeName;
         this.req = _req;
     }
-    public abstract prepare(): string;
+    public abstract toJSON(): any;
 }
 
 class y43argStringReqOrNot extends y43arg
@@ -16,7 +16,7 @@ class y43argStringReqOrNot extends y43arg
         super("y43argString", _req)
         this.value = _value;
     }
-    public prepare():string
+    public toJSON():string
     {
         return this.value;
     }

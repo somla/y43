@@ -40,8 +40,10 @@ class y43rpc
     }
     public send(call:y43call){
         this.calls[call.callId] = call;
+        // TODO: finish
+        this.ws.send("")
     }
-    constructor(_wsUrl = ""){
+    constructor(_wsUrl:string = ""){
         y43rpc.connections.push(this);
         if("" === _wsUrl)
         {
