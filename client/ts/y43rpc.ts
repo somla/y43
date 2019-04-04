@@ -1,5 +1,6 @@
 class y43rpcMessage
 {
+    public function:string|null;
     public call_id:string|null;
     public success:boolean|null;
     public req_arrive_time:number|null;
@@ -7,9 +8,15 @@ class y43rpcMessage
     public res:string|null;
     public error_msg:string|null;
     public rawData:string|null;
-    
+    public args:Array<y43arg>|null;
+    public kvargs:y43utilsDict<y43arg>| null;
+}
+
+class y43rpcRecieveMessage extends y43rpcMessage
+{
     constructor(str:string)
     {
+        super();
         //TODO: Error handling
         let jsonObj:Object     = JSON.parse(str);
         this.call_id           = jsonObj["call_id"];
@@ -18,6 +25,39 @@ class y43rpcMessage
         this.req_sending_time  = jsonObj["req_sending_time"];
         this.res               = jsonObj["res"];
         this.error_msg         = jsonObj["error_msg"];
+    }
+}
+
+class y43rpcSendMessage extends y43rpcMessage
+{
+    constructor(call:y43call)
+    {
+        super();
+        
+        this.function          = call.y43f.funcName;
+        this.args              = call.y43f.args;
+        this.kvargs            = call.y43f.kvargs;
+        this.call_id           = call.callId;
+        this.success           = null;
+        this.req_arrive_time   = null; // TODO: thinking
+        this.req_sending_time  = null; // TODO: thinking
+        this.res               = null;
+        this.error_msg         = null;
+    }
+    
+    public toJSON():Object
+    {
+        return {
+            "function"         : this.function,
+            "args"             : this.args,
+            "kvargs"           : this.kvargs,
+            "call_id"          : this.call_id,
+            "success"          : this.success,
+            "req_arrive_time"  : this.req_arrive_time,
+            "req_sending_time" : this.req_sending_time,
+            "res"              : this.res,
+            "error_msg"        : this.error_msg,
+        }
     }
 }
 
@@ -64,15 +104,15 @@ class y43rpc
         //TODO:Errorhandling
         console.log("hello");
         console.log(ev);
-        let message = new y43rpcMessage(ev.data);
+        let message = new y43rpcRecieveMessage(ev.data);
         this.calls[message.call_id].onmessage(message);
     }
 
     private _send(call:y43call)
     {
         this.calls[call.callId] = call;
-        
-        this.ws.send("");
+        let sendMessage = new y43rpcSendMessage(call);
+        this.ws.send( JSON.stringify(sendMessage) );
     }
 
     public send(call:y43call){

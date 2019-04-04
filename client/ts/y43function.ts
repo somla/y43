@@ -19,33 +19,43 @@ class y43call
 }
 
 class y43function {
-    public funcName: String;
+    public funcName: string;
     public args:Array<y43arg>;
     public kvargs:y43utilsDict<y43arg>;
     
-    public constructor(_funcName: String) 
+    public constructor(_funcName: string) 
     {
         this.funcName = _funcName;
+        this.args = new Array<y43arg>();
+        this.kvargs = {};
     }
+
     public call(_y43rpc:y43rpc): y43call {
         let c = new y43call(this,_y43rpc);
         return c;
     }
     
-    public argsToJSON():string
+    // TODO: delete
+    public argsToJSON()
     {
         let jsonArgs = {
             "args": this.args,
             "kvargs": this.kvargs,
         };
         console.debug(jsonArgs);
-        let strArgs = JSON.stringify(jsonArgs);
-        console.debug(strArgs);
-        return strArgs;
+        return jsonArgs;
     }
     public addArg(arg: y43arg, name: string| null)
     {
-
+        // TODO: errorhandling
+        if(null == name)
+        {
+            this.kvargs[name] = arg;
+        }
+        else
+        {
+            this.args.push(arg);
+        }
     }
     public onReturn()
     {
