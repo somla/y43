@@ -105,7 +105,11 @@ class y43rpc
         console.log("hello");
         console.log(ev);
         let message = new y43rpcRecieveMessage(ev.data);
-        this.calls[message.call_id].onmessage(message);
+        if(message.call_id == null || "undefined" === typeof(this.calls[message.call_id]) )
+        {
+            console.warn("Message arrived with unknown call_id:" + message.call_id )
+        }
+            this.calls[message.call_id].onmessage(message);
     }
 
     private _send(call:y43call)
