@@ -1,5 +1,6 @@
+import {y43utils} from './y43utils';
 
-class y43call
+export class y43call
 {
     public y43f:y43function;
     public sendTimeStamp:number;
@@ -19,7 +20,7 @@ class y43call
     }
 }
 
-class y43function {
+export class y43function {
     public funcName: string;
     public args:Array<y43arg>;
     public kvargs:y43utilsDict<y43arg>;

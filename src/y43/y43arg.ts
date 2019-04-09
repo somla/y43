@@ -1,4 +1,4 @@
-abstract class y43arg {
+export abstract class y43arg {
     public typename: string;
     public req: boolean;
     constructor(_typeName: string, _req: boolean) {
@@ -8,7 +8,7 @@ abstract class y43arg {
     public abstract toJSON(): any;
 }
 
-class y43argStringReqOrNot extends y43arg
+export class y43argStringReqOrNot extends y43arg
 {
     value:string;
     constructor(_value:string,_req:boolean = true )
@@ -22,7 +22,7 @@ class y43argStringReqOrNot extends y43arg
     }
 }
 
-class y43argStringReq extends y43argStringReqOrNot
+export class y43argStringReq extends y43argStringReqOrNot
 {
     constructor(_value:string )
     {
@@ -30,7 +30,7 @@ class y43argStringReq extends y43argStringReqOrNot
     }
 }
 
-class y43argStringOpt extends y43argStringReqOrNot
+export class y43argStringOpt extends y43argStringReqOrNot
 {
     constructor(_value:string )
     {
