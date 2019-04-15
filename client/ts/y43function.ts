@@ -1,8 +1,16 @@
+import {
+    y43rpc,
+    y43utils,
+    y43roundEnum,
+    y43rpcMessage,
+    y43arg,
+    y43utilsDict
+} from  './y43';
 
-class y43call
+export class y43call
 {
     public y43f:y43function;
-    public sendTimeStamp:number;
+    public sendTimeStamp:number = 2;
     public callId:string;
     public constructor(_y43function:y43function, rpc:y43rpc )
     {
@@ -19,7 +27,7 @@ class y43call
     }
 }
 
-class y43function {
+export class y43function {
     public funcName: string;
     public args:Array<y43arg>;
     public kvargs:y43utilsDict<y43arg>;
@@ -49,7 +57,7 @@ class y43function {
     public addArg(arg: y43arg, name: string| null)
     {
         // TODO: errorhandling
-        if(null == name)
+        if(null !== name)
         {
             this.kvargs[name] = arg;
         }

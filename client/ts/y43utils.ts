@@ -1,4 +1,6 @@
-enum y43roundEnum
+import 'y43';
+
+export enum y43roundEnum
 {
     none,
     round,
@@ -6,7 +8,7 @@ enum y43roundEnum
     floor,
 }
 
-class y43utils
+export class y43utils
 {
     static round(n:number, roundType = y43roundEnum.round)
     {
@@ -51,6 +53,6 @@ class y43utils
     }
 }
 
-interface y43utilsDict<valueType> {
+export interface y43utilsDict<valueType> {
     [key: string]: valueType;
  } 

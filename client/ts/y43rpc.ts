@@ -1,4 +1,11 @@
-class y43rpcMessage
+import {
+    y43call,
+    y43utils,
+    y43utilsDict,
+    y43arg
+} from './y43';
+
+export class y43rpcMessage
 {
     public function:string|null;
     public call_id:string|null;
@@ -12,7 +19,7 @@ class y43rpcMessage
     public kvargs:y43utilsDict<y43arg>| null;
 }
 
-class y43rpcRecieveMessage extends y43rpcMessage
+export class y43rpcRecieveMessage extends y43rpcMessage
 {
     constructor(str:string)
     {
@@ -28,7 +35,7 @@ class y43rpcRecieveMessage extends y43rpcMessage
     }
 }
 
-class y43rpcSendMessage extends y43rpcMessage
+export class y43rpcSendMessage extends y43rpcMessage
 {
     constructor(call:y43call)
     {
@@ -61,7 +68,7 @@ class y43rpcSendMessage extends y43rpcMessage
     }
 }
 
-class y43rpc
+export class y43rpc
 {
     public static connections:Array<y43rpc> = new Array<y43rpc>();
     public static lastConnection():y43rpc|null
@@ -109,7 +116,10 @@ class y43rpc
         {
             console.warn("Message arrived with unknown call_id:" + message.call_id )
         }
+        else
+        {
             this.calls[message.call_id].onmessage(message);
+        }
     }
 
     private _send(call:y43call)

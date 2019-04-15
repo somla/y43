@@ -1,4 +1,8 @@
-
+import {
+    y43function,
+    y43call,
+    y43rpc
+} from '../y43';
 class y43helloWorld extends y43function
 {
     constructor()

@@ -1,11 +1,13 @@
-enum y43configModeEnum
+import './y43';
+
+export enum y43configModeEnum
 {
     debug="debug",
     demo="demo",
     release="release",
 }
 
-class _y43config
+export class _y43config
 {
     public mode:y43configModeEnum = y43configModeEnum.debug;
 }
