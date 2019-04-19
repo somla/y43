@@ -1,3 +1,4 @@
+<<<<<<< HEAD:src/y43/y43rpc.ts
 import {
     y43call,
     y43utils,
@@ -5,6 +6,8 @@ import {
     y43arg
 } from './y43';
 
+=======
+>>>>>>> 739f0378e7d2558bb3bded74f237bee199f2a79e:src/y43/y43rpc.ts
 export class y43rpcMessage
 {
     public function:string|null;
